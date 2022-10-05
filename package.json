@@ -1,0 +1,19 @@
+{
+  "name": "smugchievements",
+  "version": "0.0.1",
+  "description": "Nice. I completed that ages ago.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neurotech/SmugChievements.git"
+  },
+  "scripts": {
+    "release:major": "npm version major && git push --follow-tags",
+    "release:minor": "npm version minor && git push --follow-tags",
+    "release:patch": "npm version patch && git push --follow-tags"
+  },
+  "author": "Tim Douglas",
+  "license": "MIT",
+  "homepage": "https://github.com/neurotech/SmugChievements#readme",
+  "private": true
+}

@@ -1,0 +1,52 @@
+name: "Tagged Release"
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  tagged-release:
+    runs-on: ubuntu-latest
+
+    env:
+      RELEASE_VERSION: ${GITHUB_REF#refs/*/}
+
+    steps:
+      - name: Checkout code and generate TOC files
+        uses: actions/checkout@v2
+
+      - run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - run: mkdir -p SmugChievements
+      - run: touch SmugChievements-Retail.toc SmugChievements-Classic.toc
+      - run: sed -i "s/ADDON_VERSION/${{ env.RELEASE_VERSION }}/g" SmugChievements.toctemplate
+      - run: cat SmugChievements.toctemplate > SmugChievements-Retail.toc
+      - run: cat SmugChievements.toctemplate > SmugChievements-Classic.toc
+      - run: sed -i "s/INTERFACE_VERSION/$(cat ./versions/retail)/g" SmugChievements-Retail.toc
+      - run: sed -i "s/INTERFACE_VERSION/$(cat ./versions/classic)/g" SmugChievements-Classic.toc
+      - run: cp *.lua ./SmugChievements/
+      - run: cp -r media ./SmugChievements/
+      - run: cp SmugChievements-Retail.toc ./SmugChievements/SmugChievements-Retail.toc
+
+      - name: Build Retail zip
+        uses: edgarrc/action-7z@v1.0.4
+        with:
+          args: 7z a SmugChievements-${{ env.RELEASE_VERSION }}.zip ./SmugChievements/
+
+      - run: cp SmugChievements-Classic.toc ./SmugChievements/SmugChievements-Classic.toc
+      - run: cp SmugChievements-Classic.toc ./SmugChievements/SmugChievements-BCC.toc
+      - run: cp SmugChievements-Classic.toc ./SmugChievements/SmugChievements-WOTLKC.toc
+
+      - name: Build Classic zip
+        uses: edgarrc/action-7z@v1.0.4
+        with:
+          args: 7z a SmugChievements-${{ env.RELEASE_VERSION }}-classic.zip ./SmugChievements/
+
+      - name: Publish Release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            SmugChievements-${{ env.RELEASE_VERSION }}.zip
+            SmugChievements-${{ env.RELEASE_VERSION }}-classic.zip
