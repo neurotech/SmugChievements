@@ -84,11 +84,19 @@ SmugChievementsChatListener:SetScript("OnEvent", function(self, event, ...)
           end)
 
           SmugChievementsCooldown = 5
+          C_Timer.After(SmugChievementsCooldown, function()
+            SmugChievementsCooldown = 0
+          end)
         else
-          print(SMUGCHIEVEMENTS_LOG_PREFIX .. 'Achevement \"' .. achName .. '\" has not been completed yet. Ignoring.')
+          print(SMUGCHIEVEMENTS_LOG_PREFIX ..
+            'Not replying to ' .. playerName .. ' as you have not yet completed the achievement \"' .. achName .. '\".')
+          SmugChievementsCooldown = 5
+          C_Timer.After(SmugChievementsCooldown, function()
+            SmugChievementsCooldown = 0
+          end)
         end
       else
-        print(SMUGCHIEVEMENTS_LOG_PREFIX .. "Cooldown active. Please wait " .. SmugChievementsCooldown .. "second(s).")
+        print(SMUGCHIEVEMENTS_LOG_PREFIX .. "Cooldown active. Please wait " .. SmugChievementsCooldown .. " second(s).")
 
         C_Timer.After(SmugChievementsCooldown, function()
           SmugChievementsCooldown = 0
