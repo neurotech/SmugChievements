@@ -3,7 +3,6 @@
 ## Interface-BCC: 20504
 ## Interface-Wrath: 30400
 ## X-Curse-Project-ID: 686572
-## X-Wago-ID: x
 ## Title : |cffff7afdSmugChievements|r
 ## Notes: Nice. I completed that ages ago.
 ## URL: https://www.curseforge.com/wow/addons/smugchievements

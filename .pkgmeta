@@ -1,7 +1,4 @@
 ignore:
-  - .git
-  - .github
-  - .github/workflows
-  - .github/workflows/release.yml
+  - "*.yml"
   - "dev.sh"
   - "package.json"
