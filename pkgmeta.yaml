@@ -1,5 +1,6 @@
 ignore:
   - .git
   - .github
+  - .github/workflows
   - "dev.sh"
   - "package.json"
