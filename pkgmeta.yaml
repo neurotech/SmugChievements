@@ -2,6 +2,6 @@ ignore:
   - .git
   - .github
   - .github/workflows
-  - "release.yml"
+  - .github/workflows/release.yml
   - "dev.sh"
   - "package.json"
