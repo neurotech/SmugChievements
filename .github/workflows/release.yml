@@ -22,4 +22,4 @@ jobs:
       - name: Release for WOTLKC
         uses: BigWigsMods/packager@v2
         with:
-          args: -g wrath -w 0 -a 0 -m pkgmeta.yaml
+          args: -m .pkgmeta -g wrath -w 0 -a 0
