@@ -31,7 +31,6 @@ local SmugChievementsChatListener = CreateFrame("Frame")
 
 SmugChievementsChatListener:RegisterEvent("CHAT_MSG_GUILD")
 SmugChievementsChatListener:RegisterEvent("CHAT_MSG_GUILD_ACHIEVEMENT")
-SmugChievementsChatListener:RegisterEvent("CHAT_MSG_SAY")
 
 local function split_with_colon(str)
   local fields = {}
