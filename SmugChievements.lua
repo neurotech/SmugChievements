@@ -19,7 +19,8 @@ local SMUGCHIEVEMENTS_MESSAGE_TEMPLATES = {
   [1] = "Nice. I actually completed that on %DD %MM 20%YY.",
   [2] = "Heh. Not bad, %PL. Not bad at all. I completed that achievement on %DD %MM 20%YY.",
   [3] = "Good work, %PL. I've already got that achievement. Got it way back in %MM 20%YY.",
-  [4] = "grats %PL. Me? I got that achievement already on %DD %%MM 20%YY."
+  [4] = "grats %PL. Me? I got that achievement already on %DD %%MM 20%YY.",
+  [5] = ":smug: grats... but i achieved that on %DD %MM 20%YY ;)"
 }
 
 function string.startswith(String, Start)
