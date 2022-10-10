@@ -1,4 +1,17 @@
 local SMUGCHIEVEMENTS_LOG_PREFIX = '|cffffbdfe[|r|cffff7afdSmugChievements|r|cffffbdfe]|r '
+local SmugChievementsMiniMapButton
+
+local addonLoaded = CreateFrame("Frame")
+addonLoaded:RegisterEvent("ADDON_LOADED")
+addonLoaded:RegisterEvent("PLAYER_LOGOUT")
+
+local function GetMiniMapIcon()
+  if SmugChievementsDB["SMUGCHIEVEMENTS_ACTIVE"] then
+    return "Interface\\Addons\\SmugChievements\\minimap-icon-enabled"
+  else
+    return "Interface\\Addons\\SmugChievements\\minimap-icon-disabled"
+  end
+end
 
 local SMUGCHIEVEMENTS_MONTHS = {
   [1] = "January",
@@ -23,15 +36,12 @@ local SMUGCHIEVEMENTS_MESSAGE_TEMPLATES = {
   [5] = ":smug: grats... but i achieved that on %DD %MM 20%YY ;)"
 }
 
-function string.startswith(String, Start)
+local function startswith(String, Start)
   return string.sub(String, 1, string.len(Start)) == Start
 end
 
 local SmugChievementsCooldown = 0
 local SmugChievementsChatListener = CreateFrame("Frame")
-
-SmugChievementsChatListener:RegisterEvent("CHAT_MSG_GUILD")
-SmugChievementsChatListener:RegisterEvent("CHAT_MSG_GUILD_ACHIEVEMENT")
 
 local function split_with_colon(str)
   local fields = {}
@@ -54,55 +64,109 @@ local function GetChatMessage(playerName, completedMonth, completedDay, complete
   return chatMessage
 end
 
-SmugChievementsChatListener:SetScript("OnEvent", function(self, event, ...)
-  local currentPlayer = UnitName("player")
-  local message = select(1, ...)
-  local sender = select(2, ...)
-  local playerName = sender:gsub("%-.+", "")
-  local isSelf = playerName == currentPlayer
+local function ResetCooldown()
+  C_Timer.After(SmugChievementsCooldown, function()
+    SmugChievementsCooldown = 0
+  end)
+end
 
-  -- DEBUG:
-  -- isSelf = false
+local function ToggleSmugChievements()
+  SmugChievementsMiniMapButton.icon = GetMiniMapIcon()
 
-  local isAchievementText = string.startswith(tostring(message), "has earned the achievement |cff") or
-      string.startswith(message, "[Attune] |cff")
+  if SmugChievementsDB["SMUGCHIEVEMENTS_ACTIVE"] then
+    print(SMUGCHIEVEMENTS_LOG_PREFIX .. " is now listening for achievements.")
 
-  if isAchievementText then
-    if not isSelf then
-      local pieces = split_with_colon(message);
-      local _, achName, _, achCompleted, completedMonth, completedDay, completedYear = GetAchievementInfo(pieces[2
-        ]);
+    SmugChievementsChatListener:RegisterEvent("CHAT_MSG_GUILD")
+    SmugChievementsChatListener:RegisterEvent("CHAT_MSG_GUILD_ACHIEVEMENT")
 
-      if SmugChievementsCooldown == 0 then
-        if achCompleted then
-          local delay = math.random(1, 3)
+    SmugChievementsChatListener:SetScript("OnEvent", function(self, event, ...)
+      local currentPlayer = UnitName("player")
+      local message = select(1, ...)
+      local sender = select(2, ...)
+      local playerName = sender:gsub("%-.+", "")
+      local isSelf = playerName == currentPlayer
 
-          C_Timer.After(delay, function()
-            SendChatMessage(GetChatMessage(playerName, SMUGCHIEVEMENTS_MONTHS[completedMonth], completedDay,
-              completedYear)
-              , "GUILD")
+      -- DEBUG:
+      -- isSelf = false
 
-          end)
+      local isAchievementText = startswith(tostring(message), "has earned the achievement |cff") or
+          startswith(message, "[Attune] |cff")
 
-          SmugChievementsCooldown = 5
-          C_Timer.After(SmugChievementsCooldown, function()
-            SmugChievementsCooldown = 0
-          end)
-        else
-          print(SMUGCHIEVEMENTS_LOG_PREFIX ..
-            'Not replying to ' .. playerName .. ' as you have not yet completed the achievement \"' .. achName .. '\".')
-          SmugChievementsCooldown = 5
-          C_Timer.After(SmugChievementsCooldown, function()
-            SmugChievementsCooldown = 0
-          end)
+      if isAchievementText then
+        if not isSelf then
+          local pieces = split_with_colon(message);
+          local _, achName, _, achCompleted, completedMonth, completedDay, completedYear = GetAchievementInfo(pieces[2
+            ]);
+
+          if SmugChievementsCooldown == 0 then
+            if achCompleted then
+              local delay = math.random(1, 3)
+
+              C_Timer.After(delay, function()
+                SendChatMessage(GetChatMessage(playerName, SMUGCHIEVEMENTS_MONTHS[completedMonth], completedDay,
+                  completedYear)
+                  , "GUILD")
+              end)
+
+              SmugChievementsCooldown = 5
+              ResetCooldown()
+            else
+              SmugChievementsCooldown = 5
+              ResetCooldown()
+            end
+          else
+            ResetCooldown()
+          end
         end
-      else
-        print(SMUGCHIEVEMENTS_LOG_PREFIX .. "Cooldown active. Please wait " .. SmugChievementsCooldown .. " second(s).")
-
-        C_Timer.After(SmugChievementsCooldown, function()
-          SmugChievementsCooldown = 0
-        end)
       end
+    end)
+  else
+    print(SMUGCHIEVEMENTS_LOG_PREFIX .. " is no longer listening for achievements.")
+    SmugChievementsChatListener:UnregisterEvent("CHAT_MSG_GUILD")
+    SmugChievementsChatListener:UnregisterEvent("CHAT_MSG_GUILD_ACHIEVEMENT")
+  end
+end
+
+local function InitialiseSmugChievements()
+  SmugChievementsMiniMapButton = LibStub("LibDataBroker-1.1"):NewDataObject("SmugChievements", {
+    type = "data source",
+    text = "SmugChievements",
+    icon = GetMiniMapIcon(),
+    OnClick = function(self, btn)
+      SmugChievementsDB["SMUGCHIEVEMENTS_ACTIVE"] = not SmugChievementsDB["SMUGCHIEVEMENTS_ACTIVE"]
+      ToggleSmugChievements()
+    end,
+    OnTooltipShow = function(tooltip)
+      if not tooltip or not tooltip.AddLine then return end
+      tooltip:AddLine("Click to toggle SmugChievements")
+    end,
+  })
+
+  local icon = LibStub("LibDBIcon-1.0", true)
+  icon:Register("SmugChievements", SmugChievementsMiniMapButton, SmugChievementsDB)
+end
+
+addonLoaded:SetScript(
+  "OnEvent",
+  function(self, event, arg1)
+    if event == "ADDON_LOADED" and arg1 == "SmugChievements" then
+      if SmugChievementsDB == nil then
+        -- Seed preferences with defaults
+        SmugChievementsDB = {}
+        SmugChievementsDB["SMUGCHIEVEMENTS_ACTIVE"] = false
+      end
+
+      InitialiseSmugChievements()
+
+      if SmugChievementsDB["SMUGCHIEVEMENTS_ACTIVE"] then
+        print(SMUGCHIEVEMENTS_LOG_PREFIX .. " is loaded and is |cff0eff7dactive|r.")
+      else
+        print(SMUGCHIEVEMENTS_LOG_PREFIX .. " is loaded and is |cffff0e40inactive|r.")
+      end
+
+      addonLoaded:UnregisterEvent("ADDON_LOADED")
+    elseif event == "PLAYER_LOGOUT" then
+      -- --
     end
   end
-end)
+)
