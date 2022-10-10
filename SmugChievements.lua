@@ -64,8 +64,8 @@ SmugChievementsChatListener:SetScript("OnEvent", function(self, event, ...)
   -- DEBUG:
   -- isSelf = false
 
-  local isAchievementText = string.startswith(tostring(message), "has earned the achievement ") or
-      string.startswith(message, "[Attune] |cf")
+  local isAchievementText = string.startswith(tostring(message), "has earned the achievement |cff") or
+      string.startswith(message, "[Attune] |cff")
 
   if isAchievementText then
     if not isSelf then
