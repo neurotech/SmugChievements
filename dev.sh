@@ -8,7 +8,8 @@ sed -i "s/@project-version@/$(git describe --abbrev=0)/g" SmugChievements.toc.tm
 
 mkdir -p /h/games/World\ of\ Warcraft/_classic_/Interface/AddOns/SmugChievements/
 
-cp *.lua /h/games/World\ of\ Warcraft/_classic_/Interface/AddOns/SmugChievements/
+cp -r LibDBIcon-1.0 /h/games/World\ of\ Warcraft/_classic_/Interface/AddOns/SmugChievements/
+cp *.lua *.tga /h/games/World\ of\ Warcraft/_classic_/Interface/AddOns/SmugChievements/
 
 cp SmugChievements.toc.tmp /h/games/World\ of\ Warcraft/_classic_/Interface/AddOns/SmugChievements/SmugChievements.toc
 

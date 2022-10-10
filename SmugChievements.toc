@@ -10,5 +10,6 @@
 ## Version: @project-version@
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
+## SavedVariables: SmugChievementsDB
 
 SmugChievements.lua
