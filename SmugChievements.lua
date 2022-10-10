@@ -144,6 +144,8 @@ local function InitialiseSmugChievements()
 
   local icon = LibStub("LibDBIcon-1.0", true)
   icon:Register("SmugChievements", SmugChievementsMiniMapButton, SmugChievementsDB)
+
+  ToggleSmugChievements()
 end
 
 addonLoaded:SetScript(
@@ -157,12 +159,6 @@ addonLoaded:SetScript(
       end
 
       InitialiseSmugChievements()
-
-      if SmugChievementsDB["SMUGCHIEVEMENTS_ACTIVE"] then
-        print(SMUGCHIEVEMENTS_LOG_PREFIX .. " is loaded and is |cff0eff7dactive|r.")
-      else
-        print(SMUGCHIEVEMENTS_LOG_PREFIX .. " is loaded and is |cffff0e40inactive|r.")
-      end
 
       addonLoaded:UnregisterEvent("ADDON_LOADED")
     elseif event == "PLAYER_LOGOUT" then
