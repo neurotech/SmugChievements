@@ -29,11 +29,11 @@ local SMUGCHIEVEMENTS_MONTHS = {
 }
 
 local SMUGCHIEVEMENTS_MESSAGE_TEMPLATES = {
-  [1] = "Nice. I actually completed that on %DD %MM 20%YY.",
-  [2] = "Heh. Not bad, %PL. Not bad at all. I completed that achievement on %DD %MM 20%YY.",
-  [3] = "Good work, %PL. I've already got that achievement. Got it way back in %MM 20%YY.",
-  [4] = "grats %PL. Me? I got that achievement already on %DD %MM 20%YY.",
-  [5] = ":smug: grats... but i achieved that on %DD %MM 20%YY ;)"
+  [1] = "Nice. I actually completed that on %DD %MM %YY.",
+  [2] = "Heh. Not bad, %PL. Not bad at all. I completed that achievement on %DD %MM %YY.",
+  [3] = "Good work, %PL. I've already got that achievement. Got it way back in %MM %YY.",
+  [4] = "grats %PL. Me? I got that achievement already on %DD %MM %YY.",
+  [5] = ":smug: grats... but i achieved that on %DD %MM %YY ;)"
 }
 
 local function startswith(String, Start)
@@ -59,7 +59,7 @@ local function GetChatMessage(playerName, completedMonth, completedDay, complete
   chatMessage = chatMessage:gsub("%%PL", playerName)
   chatMessage = chatMessage:gsub("%%DD", completedDay)
   chatMessage = chatMessage:gsub("%%MM", completedMonth)
-  chatMessage = chatMessage:gsub("%%YY", completedYear)
+  chatMessage = chatMessage:gsub("%%YY", completedYear + 2000)
 
   return chatMessage
 end
@@ -79,7 +79,7 @@ local function ToggleSmugChievements()
     SmugChievementsChatListener:RegisterEvent("CHAT_MSG_GUILD")
     SmugChievementsChatListener:RegisterEvent("CHAT_MSG_GUILD_ACHIEVEMENT")
 
-    SmugChievementsChatListener:SetScript("OnEvent", function(self, event, ...)
+    SmugChievementsChatListener:SetScript("OnEvent", function(_, _, ...)
       local currentPlayer = UnitName("player")
       local message = select(1, ...)
       local sender = select(2, ...)
@@ -95,8 +95,8 @@ local function ToggleSmugChievements()
       if isAchievementText then
         if not isSelf then
           local pieces = split_with_colon(message);
-          local _, achName, _, achCompleted, completedMonth, completedDay, completedYear = GetAchievementInfo(pieces[2
-            ]);
+          local _, _, _, achCompleted, completedMonth, completedDay, completedYear = GetAchievementInfo(pieces[2
+          ]);
 
           if SmugChievementsCooldown == 0 then
             if achCompleted then
@@ -105,7 +105,7 @@ local function ToggleSmugChievements()
               C_Timer.After(delay, function()
                 SendChatMessage(GetChatMessage(playerName, SMUGCHIEVEMENTS_MONTHS[completedMonth], completedDay,
                   completedYear)
-                  , "GUILD")
+                , "GUILD")
               end)
 
               SmugChievementsCooldown = 5
@@ -132,7 +132,7 @@ local function InitialiseSmugChievements()
     type = "data source",
     text = "SmugChievements",
     icon = GetMiniMapIcon(),
-    OnClick = function(self, btn)
+    OnClick = function()
       SmugChievementsDB["SMUGCHIEVEMENTS_ACTIVE"] = not SmugChievementsDB["SMUGCHIEVEMENTS_ACTIVE"]
       ToggleSmugChievements()
     end,
@@ -150,7 +150,7 @@ end
 
 addonLoaded:SetScript(
   "OnEvent",
-  function(self, event, arg1)
+  function(_, event, arg1)
     if event == "ADDON_LOADED" and arg1 == "SmugChievements" then
       if SmugChievementsDB == nil then
         -- Seed preferences with defaults
