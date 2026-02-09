@@ -1,5 +1,8 @@
 ignore:
   - "*.yml"
   - "*.psd"
+  - "psd"
   - "dev.sh"
   - "package.json"
+  - ".vscode"
+  - ".github"

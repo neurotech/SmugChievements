@@ -1,8 +1,4 @@
-## Interface: 100206
-## Interface-Classic: 11502
-## Interface-BCC: 20504
-## Interface-Wrath: 30403
-## Interface-Cata: 40400
+## Interface: 120000, 11508, 20504, 30405, 40402, 50503
 ## X-Curse-Project-ID: 686572
 ## Title: |cffff7afdSmugChievements|r
 ## Notes: Nice. I completed that ages ago.

@@ -1,26 +1,40 @@
-echo "Building SmugChievements and installing to WoW directory."
+#!/bin/bash
 
-touch SmugChievements.toc.tmp
+WOW_DIR="$HOME/games/World of Warcraft"
+ADDON_NAME="SmugChievements"
 
-cat SmugChievements.toc >SmugChievements.toc.tmp
+TARGETS=(
+    "_retail_:Retail"
+    # "_classic_:Classic"
+    # "_classic_ptr_:Classic PTR"
+    # "_xptr_:Retail PTR (xptr)"
+    # "_ptr_:Retail PTR"
+)
 
-sed -i "s/@project-version@/$(git describe --abbrev=0)/g" SmugChievements.toc.tmp
+install_addon() {
+    local client="$1"
+    local label="$2"
+    local dest="$WOW_DIR/$client/Interface/AddOns/$ADDON_NAME"
 
-mkdir -p /f/games/World\ of\ Warcraft/_retail_/Interface/AddOns/SmugChievements/
-mkdir -p /f/games/World\ of\ Warcraft/_classic_/Interface/AddOns/SmugChievements/
-mkdir -p /f/games/World\ of\ Warcraft/_classic_era_ptr_/Interface/AddOns/SmugChievements/
+    echo "Copying assets to $label..."
+    mkdir -p "$dest"
+    cp *.lua "$dest/"
+    cp icon-texture.tga "$dest/"
+    cp $ADDON_NAME.toc.tmp "$dest/$ADDON_NAME.toc"
+}
 
-cp -r LibDBIcon-1.0 /f/games/World\ of\ Warcraft/_retail_/Interface/AddOns/SmugChievements/
-cp -r LibDBIcon-1.0 /f/games/World\ of\ Warcraft/_classic_/Interface/AddOns/SmugChievements/
-cp -r LibDBIcon-1.0 /f/games/World\ of\ Warcraft/_classic_era_ptr_/Interface/AddOns/SmugChievements/
+echo "Building $ADDON_NAME and installing to WoW directory."
 
-cp *.lua *.tga /f/games/World\ of\ Warcraft/_retail_/Interface/AddOns/SmugChievements/
-cp *.lua *.tga /f/games/World\ of\ Warcraft/_classic_/Interface/AddOns/SmugChievements/
-cp *.lua *.tga /f/games/World\ of\ Warcraft/_classic_era_ptr_/Interface/AddOns/SmugChievements/
+echo "Creating TOC file..."
+sed "s/@project-version@/$(git describe --abbrev=0)/g" $ADDON_NAME.toc > $ADDON_NAME.toc.tmp
 
-cp SmugChievements.toc.tmp /f/games/World\ of\ Warcraft/_retail_/Interface/AddOns/SmugChievements/SmugChievements.toc
-cp SmugChievements.toc.tmp /f/games/World\ of\ Warcraft/_classic_/Interface/AddOns/SmugChievements/SmugChievements.toc
-cp SmugChievements.toc.tmp /f/games/World\ of\ Warcraft/_classic_era_ptr_/Interface/AddOns/SmugChievements/SmugChievements.toc
+for target in "${TARGETS[@]}"; do
+    client="${target%%:*}"
+    label="${target##*:}"
+    install_addon "$client" "$label"
+done
 
-rm SmugChievements.toc.tmp
+echo "Cleaning up..."
+rm $ADDON_NAME.toc.tmp
+
 echo "Complete."
