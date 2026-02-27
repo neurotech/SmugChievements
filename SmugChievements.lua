@@ -68,6 +68,12 @@ local function InitialiseSmugChievements()
         SmugChievementsChatListener:RegisterEvent("CHAT_MSG_ACHIEVEMENT")
 
         SmugChievementsChatListener:SetScript("OnEvent", function(_, _, ...)
+            local inCombat = UnitAffectingCombat("player")
+
+            if inCombat then
+                return
+            end
+
             local currentPlayer = UnitName("player")
             local message = select(1, ...)
             local sender = select(2, ...)
