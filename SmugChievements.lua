@@ -24,7 +24,8 @@ local SMUGCHIEVEMENTS_MESSAGE_TEMPLATES = {
     [2] = "Heh. Not bad, %PL. Not bad at all. I completed that achievement on %DD %MM %YY.",
     [3] = "Good work, %PL. I've already got that achievement. Got it way back in %MM %YY.",
     [4] = "grats %PL. Me? I got that achievement already on %DD %MM %YY.",
-    [5] = "grats... but i achieved that on %DD %MM %YY ;)"
+    [5] = "grats... but i achieved that on %DD %MM %YY ;)",
+    [6] = "Impressive. Myself? I completed that on %DD %MM %YY."
 }
 
 local SmugChievementsCooldown = 0

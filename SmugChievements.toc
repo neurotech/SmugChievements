@@ -1,13 +1,19 @@
-## Interface: 120001, 11508, 20504, 30405, 40402, 50503
+## Interface: 120007, 120100, 11508, 20504, 30405, 40402, 50503
 ## X-Curse-Project-ID: 686572
-## Title: |cffff7afdSmugChievements|r
+
+## Title: SmugChievements
+## Category: Achievements
 ## Notes: Nice. I completed that ages ago.
+
 ## URL: https://www.curseforge.com/wow/addons/smugchievements
+
 ## Author: neurotech
 ## Version: @project-version@
+
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## SavedVariables: SmugChievementsDB
+
 ## IconTexture: Interface\Addons\SmugChievements\icon-texture
 
 SmugChievements.lua
